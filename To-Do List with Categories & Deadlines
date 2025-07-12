@@ -1,0 +1,118 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Just a simple structure to hold our task details
+struct TaskItem {
+    string title;
+    string tag;
+    string dueDate;
+    bool isDone = false;  // default to not done
+};
+
+class TodoManager {
+    vector<TaskItem> taskList;
+
+public:
+    // Add a new task by getting input from user
+    void createTask() {
+        TaskItem newTask;
+        cout << "Task title: ";
+        cin.ignore();  // flush input stream (necessary after menu input)
+        getline(cin, newTask.title);
+
+        cout << "Category? (like Work / Home / Errands): ";
+        getline(cin, newTask.tag);
+
+        cout << "Due date (e.g. 15 July): ";
+        getline(cin, newTask.dueDate);
+
+        // Mark as incomplete by default
+        newTask.isDone = false;
+
+        taskList.push_back(newTask);
+
+        cout << "✅ Cool, added to your list.\n";
+    }
+
+    // Show all tasks
+    void listTasks() {
+        cout << "\n📝 Here's what you got:\n";
+
+        if (taskList.empty()) {
+            cout << "(No tasks yet!)\n";
+            return;
+        }
+
+        for (int i = 0; i < taskList.size(); ++i) {
+            const TaskItem& t = taskList[i];
+
+            // A little formatting
+            cout << (i + 1) << ". [" << (t.isDone ? "✔" : " ") << "] " << t.title
+                 << " (" << t.tag << ", Due: " << t.dueDate << ")\n";
+        }
+    }
+
+    // Mark a task as completed
+    void finishTask() {
+        listTasks();
+        if (taskList.empty()) return;
+
+        int taskNum;
+        cout << "Which one did you finish? (number): ";
+        cin >> taskNum;
+
+        if (taskNum > 0 && taskNum <= taskList.size()) {
+            taskList[taskNum - 1].isDone = true;
+            cout << "👍 Marked as done.\n";
+        } else {
+            cout << "Hmm, that doesn't seem right.\n";
+        }
+    }
+
+    // Delete a task based on index
+    void removeTask() {
+        listTasks();
+        if (taskList.empty()) return;
+
+        int taskNum;
+        cout << "Task number to remove: ";
+        cin >> taskNum;
+
+        if (taskNum > 0 && taskNum <= taskList.size()) {
+            taskList.erase(taskList.begin() + (taskNum - 1));
+            cout << "🗑 Task removed from your list.\n";
+        } else {
+            cout << "That number doesn’t match any task.\n";
+        }
+    }
+};
+
+int main() {
+    TodoManager myTasks;
+    int userChoice;
+
+    do {
+        cout << "\n===== 🌟 To-Do List Menu =====\n";
+        cout << "1. Add New Task\n";
+        cout << "2. View Tasks\n";
+        cout << "3. Mark Task Completed\n";
+        cout << "4. Delete Task\n";
+        cout << "5. Quit\n";
+        cout << "Pick an option (1–5): ";
+        cin >> userChoice;
+
+        switch (userChoice) {
+            case 1: myTasks.createTask(); break;
+            case 2: myTasks.listTasks(); break;
+            case 3: myTasks.finishTask(); break;
+            case 4: myTasks.removeTask(); break;
+            case 5: cout << "Goodbye! Stay productive. 👋\n"; break;
+            default: cout << "Invalid option! Try again.\n"; break;
+        }
+
+    } while (userChoice != 5);
+
+    return 0;
+}
