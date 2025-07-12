@@ -1,0 +1,92 @@
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class BasicCalculator {
+    vector<string> calcHistory;
+
+    // Handles simple 2-number evaluations
+    double doMath(double left, char oper, double right) {
+        switch (oper) {
+            case '+': return left + right;
+            case '-': return left - right;
+            case '*': return left * right;
+            case '/':
+                if (right != 0) return left / right;
+                // Probably should give a better warning but keeping it simple
+                cout << "⚠️  Division by zero! Returning 0.\n";
+                return 0;
+            default:
+                cout << "Unknown operator: " << oper << endl;
+                return 0;
+        }
+    }
+
+public:
+    // Parses a basic expression like "3 + 4 - 1" — no operator precedence
+    void runCalculation(string inputExpr) {
+        stringstream ss(inputExpr);
+        double result = 0;
+        double tempNum;
+        char symbol;
+
+        ss >> result;  // get the first number upfront
+
+        // We'll just go left to right, not doing precedence stuff
+        while (ss >> symbol >> tempNum) {
+            result = doMath(result, symbol, tempNum);
+        }
+
+        cout << "🧮 Result: " << result << endl;
+
+        // Save the calculation string and result together for history
+        calcHistory.push_back(inputExpr + " = " + to_string(result));
+    }
+
+    // Prints all previously stored expressions
+    void printHistory() {
+        cout << "\n📜 Your Calculation History:\n";
+        if (calcHistory.empty()) {
+            cout << "(empty)\n";
+            return;
+        }
+
+        for (auto &h : calcHistory) {
+            cout << h << endl;
+        }
+    }
+};
+
+int main() {
+    BasicCalculator myCalc;
+    int menuChoice = 0;
+    string userExpr;
+
+    do {
+        cout << "\n===== Smart(ish) Calculator =====\n";
+        cout << "1. Enter New Expression\n";
+        cout << "2. Show History\n";
+        cout << "3. Quit\n";
+        cout << "Pick one: ";
+        cin >> menuChoice;
+        cin.ignore();  // To handle leftover newline
+
+        if (menuChoice == 1) {
+            cout << "Enter math expression (like 7 * 3 - 2): ";
+            getline(cin, userExpr);
+            myCalc.runCalculation(userExpr);
+        } else if (menuChoice == 2) {
+            myCalc.printHistory();
+        } else if (menuChoice != 3) {
+            cout << "Hmm, didn't get that. Try 1, 2, or 3.\n";
+        }
+
+    } while (menuChoice != 3);
+
+    cout << "\n👋 Bye! Thanks for calculating stuff with me.\n";
+
+    return 0;
+}
