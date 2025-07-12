@@ -1,0 +1,107 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// A simple structure for book data
+struct BookInfo {
+    string title;
+    string author;
+    string readingStatus;
+    int stars = 0;       // default if not rated
+    string userReview;
+};
+
+class MyLibrary {
+    vector<BookInfo> books;
+
+public:
+    // Adds a new book entry
+    void insertBook() {
+        BookInfo newBook;
+
+        cout << "What's the title? ";
+        cin.ignore();  // make sure input buffer is clean
+        getline(cin, newBook.title);
+
+        cout << "Who's the author? ";
+        getline(cin, newBook.author);
+
+        cout << "Reading status (To Read / Reading / Read): ";
+        getline(cin, newBook.readingStatus);
+
+        if (newBook.readingStatus == "Read") {
+            cout << "How would you rate it out of 5? ";
+            cin >> newBook.stars;
+            cin.ignore();  // get ready for next line input
+            cout << "Drop a quick review (optional): ";
+            getline(cin, newBook.userReview);
+        }
+
+        books.push_back(newBook);
+        cout << "📘 Book logged successfully!\n";
+    }
+
+    // Displays all saved books
+    void displayBooks() {
+        cout << "\n=== 📚 Your Book List ===\n";
+
+        if (books.empty()) {
+            cout << "(Looks like it's still empty. Time to read!)\n";
+            return;
+        }
+
+        for (int i = 0; i < books.size(); ++i) {
+            const BookInfo& b = books[i];
+
+            cout << "\nBook #" << (i + 1) << "\n";
+            cout << "Title: " << b.title << "\n";
+            cout << "Author: " << b.author << "\n";
+            cout << "Status: " << b.readingStatus << "\n";
+
+            // Only show rating & review if it's marked "Read"
+            if (b.readingStatus == "Read") {
+                cout << "Rating: " << b.stars << "/5\n";
+
+                if (!b.userReview.empty()) {
+                    cout << "Review: " << b.userReview << "\n";
+                } else {
+                    cout << "(No review written)\n";
+                }
+            }
+
+            cout << "----------------------\n";
+        }
+    }
+};
+
+int main() {
+    MyLibrary myShelf;
+    int menuPick = 0;
+
+    do {
+        cout << "\n===== 📖 Personal Library Menu =====\n";
+        cout << "1. Add a Book\n";
+        cout << "2. View Collection\n";
+        cout << "3. Exit\n";
+        cout << "Pick an option (1–3): ";
+        cin >> menuPick;
+
+        switch (menuPick) {
+            case 1:
+                myShelf.insertBook();
+                break;
+            case 2:
+                myShelf.displayBooks();
+                break;
+            case 3:
+                cout << "📚 See you next time! Keep reading!\n";
+                break;
+            default:
+                cout << "That’s not a valid option. Try again.\n";
+        }
+
+    } while (menuPick != 3);
+
+    return 0;
+}
