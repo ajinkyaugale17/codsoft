@@ -1,0 +1,73 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <thread>
+#include <chrono>
+
+using namespace std;
+
+// Just to simulate a screen clear — not the best method, but it kinda works
+void clearScreen() {
+    for (int i = 0; i < 25; i++) {
+        cout << "\n";
+    }
+}
+
+int main() {
+    srand(static_cast<unsigned int>(time(0)));  // Seed randomness with current time
+
+    int currentLevel = 1;
+    int totalScore = 0;
+    char userChoice;
+
+    cout << "🧠 Welcome to the Number Memory Challenge!\n";
+    cout << "Try to remember the number shown to you — it gets tougher each round.\n";
+
+    do {
+        int digitsToShow = currentLevel + 1;  // Level 1 starts with 2 digits
+        string generatedNumber = "";
+
+        // Building the number digit by digit — could be more elegant, but this is readable
+        for (int i = 0; i < digitsToShow; ++i) {
+            int digit = rand() % 10;
+            generatedNumber += to_string(digit);
+        }
+
+        cout << "\n--- Level " << currentLevel << " ---\n";
+        cout << "Memorize this number: " << generatedNumber << endl;
+
+        // Brief pause so the user has time to memorize
+        this_thread::sleep_for(chrono::seconds(3));
+
+        clearScreen();  // Fake screen clear
+
+        string playerGuess;
+        cout << "Okay, now type the number you just saw: ";
+        cin >> playerGuess;
+
+        // Compare user input with generated number
+        if (playerGuess == generatedNumber) {
+            cout << "✅ Nailed it! That was correct.\n";
+            ++currentLevel;
+            ++totalScore;
+        } else {
+            cout << "❌ Oops! That was incorrect.\n";
+            cout << "The correct number was: " << generatedNumber << endl;
+            cout << "🎮 Game Over. You made it to level " << currentLevel << ".\n";
+            cout << "Your final score: " << totalScore << "\n";
+            break;  // End game on wrong answer
+        }
+
+        // Ask player if they want to continue
+        cout << "\nWanna try the next level? (y/n): ";
+        cin >> userChoice;
+
+        // Extra newline just to space things out a bit
+        cout << endl;
+
+    } while (userChoice == 'y' || userChoice == 'Y');
+
+    cout << "Thanks a ton for playing! Hope you had fun.\n";
+
+    return 0;
+}
