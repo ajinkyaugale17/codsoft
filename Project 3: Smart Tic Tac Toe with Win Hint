@@ -1,0 +1,114 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Global board — not ideal, but easy for this small game
+char gameBoard[3][3];
+
+// Fills the board with 1-9 chars
+void setupBoard() {
+    char currentChar = '1';
+    for (int row = 0; row < 3; row++) {
+        for (int col = 0; col < 3; col++) {
+            gameBoard[row][col] = currentChar++;
+        }
+    }
+}
+
+// Prints the current board status
+void printBoard() {
+    cout << "\n";
+    for (int r = 0; r < 3; ++r) {
+        for (int c = 0; c < 3; ++c) {
+            cout << gameBoard[r][c] << " ";
+        }
+        cout << "\n";
+    }
+    cout << endl;
+}
+
+// Simple win checker for rows, cols, and diagonals
+bool didPlayerWin(char symbol) {
+    for (int i = 0; i < 3; i++) {
+        if ((gameBoard[i][0] == symbol && gameBoard[i][1] == symbol && gameBoard[i][2] == symbol) ||
+            (gameBoard[0][i] == symbol && gameBoard[1][i] == symbol && gameBoard[2][i] == symbol)) {
+            return true;
+        }
+    }
+
+    // Diagonals
+    if ((gameBoard[0][0] == symbol && gameBoard[1][1] == symbol && gameBoard[2][2] == symbol) ||
+        (gameBoard[0][2] == symbol && gameBoard[1][1] == symbol && gameBoard[2][0] == symbol)) {
+        return true;
+    }
+
+    return false;
+}
+
+// Checks if the board is full without a winner
+bool boardIsFull() {
+    for (int x = 0; x < 3; x++)
+        for (int y = 0; y < 3; y++)
+            if (gameBoard[x][y] != 'X' && gameBoard[x][y] != 'O')
+                return false;
+    return true;
+}
+
+// Actual gameplay loop
+void runGame() {
+    char currentPlayer = 'X';
+    int chosenMove;
+
+    while (true) {
+        printBoard();
+        cout << "Player " << currentPlayer << ", enter your move (1-9): ";
+        cin >> chosenMove;
+
+        bool moveApplied = false;
+
+        for (int row = 0; row < 3 && !moveApplied; ++row) {
+            for (int col = 0; col < 3; ++col) {
+                if (gameBoard[row][col] == (chosenMove + '0')) {
+                    gameBoard[row][col] = currentPlayer;
+                    moveApplied = true;
+                    break;  // Optional: break early for efficiency
+                }
+            }
+        }
+
+        if (!moveApplied) {
+            cout << "🚫 That spot's taken or invalid. Try again.\n";
+            continue;
+        }
+
+        if (didPlayerWin(currentPlayer)) {
+            printBoard();
+            cout << "🎉 Player " << currentPlayer << " wins the game!\n";
+            break;
+        }
+
+        if (boardIsFull()) {
+            printBoard();
+            cout << "😐 It's a tie. Nobody wins.\n";
+            break;
+        }
+
+        // Flip players
+        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+    }
+}
+
+int main() {
+    cout << "🎮 Welcome to a slightly smarter Tic Tac Toe!\n";
+    char again;
+
+    do {
+        setupBoard();  // Always reset the board
+        runGame();     // Run a full match
+        cout << "Wanna go again? (y/n): ";
+        cin >> again;
+    } while (again == 'y' || again == 'Y');
+
+    cout << "👋 Thanks for playing!\n";
+    return 0;
+}
